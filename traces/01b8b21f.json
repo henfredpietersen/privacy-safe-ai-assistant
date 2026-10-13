@@ -1,0 +1,32 @@
+{
+  "run_id": "01b8b21f",
+  "status": "ok",
+  "output": "Growth plan is R1499 per month and includes 10 seats. [policy#1]",
+  "steps": [
+    {
+      "t": 1791857030.66,
+      "kind": "model",
+      "step": 0,
+      "router": "route",
+      "call": {
+        "tool": "search_policy",
+        "args": {
+          "query": "What does the growth plan cost?"
+        }
+      }
+    },
+    {
+      "t": 1791857030.66,
+      "kind": "tool",
+      "tool": "search_policy",
+      "args": {
+        "query": "What does the growth plan cost?"
+      },
+      "result": {
+        "score": 0.5,
+        "doc_id": "policy#1",
+        "text": "Growth plan is R1499 per month and includes 10 seats."
+      }
+    }
+  ]
+}

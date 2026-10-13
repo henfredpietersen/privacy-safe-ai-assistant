@@ -1,0 +1,45 @@
+{
+  "run_id": "18bcebcd",
+  "status": "abstain_low_score",
+  "output": "Retrieval score too low. Not answering.",
+  "steps": [
+    {
+      "t": 1791857030.661,
+      "kind": "redact",
+      "after": "my ID is [id], can I return my order?",
+      "emails": 0,
+      "ids": 1
+    },
+    {
+      "t": 1791857030.661,
+      "kind": "model",
+      "step": 0,
+      "router": "route",
+      "call": {
+        "tool": "search_policy",
+        "args": {
+          "query": "my ID is [id], can I return my order?"
+        }
+      }
+    },
+    {
+      "t": 1791857030.661,
+      "kind": "tool",
+      "tool": "search_policy",
+      "args": {
+        "query": "my ID is [id], can I return my order?"
+      },
+      "result": {
+        "score": 0.0,
+        "doc_id": "policy#2",
+        "text": "Starter has no weekend phone support."
+      }
+    },
+    {
+      "t": 1791857030.661,
+      "kind": "guard",
+      "reason": "low_score",
+      "score": 0.0
+    }
+  ]
+}

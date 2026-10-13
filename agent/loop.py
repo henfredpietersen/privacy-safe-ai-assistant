@@ -8,6 +8,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
 EMAIL = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.I)
 SA_ID = re.compile(r"\b\d{13}\b")
@@ -52,6 +53,29 @@ TOOLS = {
     "lookup_customer": lookup_customer,
 }
 
+# Exact argument shape per tool: required keys, their types, no extras.
+SCHEMAS: dict[str, dict[str, type]] = {
+    "search_policy": {"query": str},
+    "lookup_customer": {"plan": str},
+}
+
+
+def check_args(name: str, args) -> str | None:
+    """Return a reason string if args do not match the tool schema, else None."""
+    schema = SCHEMAS[name]
+    if not isinstance(args, dict):
+        return "args_not_object"
+    missing = sorted(set(schema) - set(args))
+    extra = sorted(set(args) - set(schema))
+    if missing:
+        return f"missing:{','.join(missing)}"
+    if extra:
+        return f"unexpected:{','.join(extra)}"
+    for key, typ in schema.items():
+        if not isinstance(args[key], typ):
+            return f"type:{key}"
+    return None
+
 
 @dataclass
 class Trace:
@@ -78,30 +102,52 @@ def route(message: str) -> dict | None:
     return None
 
 
-def run_agent(message: str, max_steps: int = 3, min_retrieval: float = 0.15) -> Trace:
+Router = Callable[[str], "dict | None"]
+
+
+def run_agent(
+    message: str,
+    max_steps: int = 3,
+    min_retrieval: float = 0.15,
+    router: Router | None = None,
+) -> Trace:
+    """Run one request. `router` proposes a tool call; the guards below decide.
+
+    Default router is the offline `route()`. Pass agent.llm.make_llm_router()
+    for the OpenAI-compatible path. Redaction runs before any router sees text.
+    """
+    router = router or route
     trace = Trace(run_id=uuid.uuid4().hex[:8])
     clean = redact(message)
     if clean != message:
-        trace.add("redact", before=message, after=clean)
+        # Store only the redacted text. The raw input must not land in trace files.
+        trace.add("redact", after=clean, emails=len(EMAIL.findall(message)), ids=len(SA_ID.findall(message)))
     message = clean
     for step in range(max_steps):
-        call = route(message)
-        trace.add("model", step=step, call=call)
+        try:
+            call = router(message)
+        except Exception as exc:  # network error, bad response: fail closed
+            trace.status = "router_error"
+            trace.output = "Router failed. Not answering."
+            trace.add("guard", reason="router_error", error=f"{type(exc).__name__}: {exc}")
+            return trace
+        trace.add("model", step=step, router=getattr(router, "__name__", "router"), call=call)
         if call is None:
             trace.status = "no_tool"
             trace.output = "No safe tool for that request."
             return trace
         name = call.get("tool")
-        args = call.get("args") or {}
+        args = call.get("args")
         if name not in TOOLS:
             trace.status = "blocked_unknown_tool"
             trace.output = f"Blocked unknown tool {name}."
             trace.add("guard", reason="unknown_tool", tool=name)
             return trace
-        if name == "search_policy" and not isinstance(args.get("query"), str):
+        bad = check_args(name, call.get("args"))
+        if bad:
             trace.status = "blocked_schema"
             trace.output = "Blocked malformed tool arguments."
-            trace.add("guard", reason="schema")
+            trace.add("guard", reason="schema", detail=bad)
             return trace
         result = TOOLS[name](**args)
         trace.add("tool", tool=name, args=args, result=result)

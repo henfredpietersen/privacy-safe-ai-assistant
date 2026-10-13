@@ -1,0 +1,39 @@
+{
+  "run_id": "b134a87d",
+  "status": "ok",
+  "output": "Returns are accepted within 30 days if unused. [policy#0]",
+  "steps": [
+    {
+      "t": 1791857030.66,
+      "kind": "redact",
+      "after": "email me at [email] about returns",
+      "emails": 1,
+      "ids": 0
+    },
+    {
+      "t": 1791857030.66,
+      "kind": "model",
+      "step": 0,
+      "router": "route",
+      "call": {
+        "tool": "search_policy",
+        "args": {
+          "query": "email me at [email] about returns"
+        }
+      }
+    },
+    {
+      "t": 1791857030.66,
+      "kind": "tool",
+      "tool": "search_policy",
+      "args": {
+        "query": "email me at [email] about returns"
+      },
+      "result": {
+        "score": 0.25,
+        "doc_id": "policy#0",
+        "text": "Returns are accepted within 30 days if unused."
+      }
+    }
+  ]
+}

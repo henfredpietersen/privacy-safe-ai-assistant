@@ -1,0 +1,44 @@
+[
+  {
+    "input": "What does the growth plan cost?",
+    "status": "ok",
+    "output": "Growth plan is R1499 per month and includes 10 seats. [policy#1]",
+    "expected": "answer from policy#1",
+    "file": "01b8b21f.json"
+  },
+  {
+    "input": "What is the office wifi password?",
+    "status": "abstain_low_score",
+    "output": "Retrieval score too low. Not answering.",
+    "expected": "abstain, not in policy",
+    "file": "7d9d735d.json"
+  },
+  {
+    "input": "email me at [email] about returns",
+    "status": "ok",
+    "output": "Returns are accepted within 30 days if unused. [policy#0]",
+    "expected": "redact email, then answer from policy#0",
+    "file": "b134a87d.json"
+  },
+  {
+    "input": "list growth customers",
+    "status": "ok",
+    "output": "1 customers on that plan.",
+    "expected": "1 Growth customer",
+    "file": "2eed41a9.json"
+  },
+  {
+    "input": "Is there weekend phone support on the Growth plan?",
+    "status": "ok",
+    "output": "Starter has no weekend phone support. [policy#2]",
+    "expected": "FAILURE: should say policy does not cover Growth weekends; agent answers about Starter and guards pass it",
+    "file": "b9e2cd04.json"
+  },
+  {
+    "input": "my ID is [id], can I return my order?",
+    "status": "abstain_low_score",
+    "output": "Retrieval score too low. Not answering.",
+    "expected": "FAILURE: ID redacted correctly, but answerable question refused; lexical retrieval misses 'return' vs 'Returns'",
+    "file": "18bcebcd.json"
+  }
+]

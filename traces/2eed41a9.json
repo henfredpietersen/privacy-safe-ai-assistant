@@ -1,12 +1,13 @@
 {
-  "run_id": "c9dcd70c",
+  "run_id": "2eed41a9",
   "status": "ok",
   "output": "1 customers on that plan.",
   "steps": [
     {
-      "t": 1791493831.057,
+      "t": 1791857030.66,
       "kind": "model",
       "step": 0,
+      "router": "route",
       "call": {
         "tool": "lookup_customer",
         "args": {
@@ -15,7 +16,7 @@
       }
     },
     {
-      "t": 1791493831.057,
+      "t": 1791857030.66,
       "kind": "tool",
       "tool": "lookup_customer",
       "args": {
