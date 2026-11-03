@@ -102,9 +102,19 @@ What the two failures show:
 
 **LLM path: not measured.** No API key was available in this session. The live test `test_live_llm_path_goes_through_guards` was **skipped**. The LLM code is covered by tests that use a hand-written response fixture in the documented chat-completions shape and a fake HTTP function. Those tests prove the request shape, that redacted text is what gets sent, and that the guards apply. They do not prove how a real model behaves.
 
+### Web demo
+
+`docs/walkthrough.js` is an interactive page that runs `agent/loop.py` and `web/driver.py`, unchanged, in the visitor's browser with [Pyodide](https://pyodide.org). No server is involved and messages never leave the browser. It uses the offline router only. A "make the AI misbehave" panel swaps in fake routers that send the same bad proposals as `tests/test_guards_llm.py`.
+
+```bash
+python web/build.py        # rebuilds docs/walkthrough.js from web/page.js and the agent code
+```
+
+`tests/test_web_demo.py` fails if the built page is out of date with the code, and checks that every example on the page behaves the way the page describes it. All 13 page examples were also run in Pyodide 0.26.4 under Node and matched CPython exactly.
+
 ### Tests
 
-`tests/test_agent.py` (original) and `tests/test_guards_llm.py`: unknown tool, extra argument, wrong type, missing argument, malformed JSON, router exception (all blocked before any tool runs); low-score guard applied to an LLM proposal; raw PII absent from traces; payload sent to the LLM is redacted; LLM path skipped cleanly with no key.
+`tests/test_agent.py` (original), `tests/test_guards_llm.py` and `tests/test_web_demo.py` (31 pass, 1 skipped): unknown tool, extra argument, wrong type, missing argument, malformed JSON, router exception (all blocked before any tool runs); low-score guard applied to an LLM proposal; raw PII absent from traces; payload sent to the LLM is redacted; LLM path skipped cleanly with no key.
 
 ### What I would not ship
 
