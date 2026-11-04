@@ -4,6 +4,8 @@ An AI helper for answering customer questions, wrapped in safety checks. The che
 
 > *Previously named `tool-agent-guarded`.*
 
+**Try it live:** [outview.co.za/case-study-privacy-safe-assistant](https://outview.co.za/case-study-privacy-safe-assistant/). It runs in your browser: type a customer message, watch the checks run, or make the AI misbehave and see each bad request blocked. Nothing you type leaves your browser.
+
 ## In plain English
 
 **The problem.** When an AI is allowed to use tools (look something up, list customers), it can go wrong in a few ways: ask for a tool that does not exist, send badly formed requests, or answer with weak evidence. Customer messages can also contain personal details that should not be sent to an outside AI service or saved in a log file.
@@ -104,7 +106,7 @@ What the two failures show:
 
 ### Web demo
 
-`docs/walkthrough.js` is an interactive page that runs `agent/loop.py` and `web/driver.py`, unchanged, in the visitor's browser with [Pyodide](https://pyodide.org). No server is involved and messages never leave the browser. It uses the offline router only. A "make the AI misbehave" panel swaps in fake routers that send the same bad proposals as `tests/test_guards_llm.py`.
+`docs/walkthrough.js` ([live](https://outview.co.za/case-study-privacy-safe-assistant/)) is an interactive page that runs `agent/loop.py` and `web/driver.py`, unchanged, in the visitor's browser with [Pyodide](https://pyodide.org). No server is involved and messages never leave the browser. It uses the offline router only. A "make the AI misbehave" panel swaps in fake routers that send the same bad proposals as `tests/test_guards_llm.py`.
 
 ```bash
 python web/build.py        # rebuilds docs/walkthrough.js from web/page.js and the agent code
